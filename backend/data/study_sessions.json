@@ -1,0 +1,101 @@
+[
+  {
+    "id": "2f29facb-77ac-4037-bd1d-ca2f132f44d9",
+    "subject": "Test Mathematics",
+    "duration_minutes": 25,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Complete algebra problems",
+      "Review calculus"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "74d24f32-da18-4f96-b652-cb1f8afe2bfd",
+    "subject": "Workflow Test",
+    "duration_minutes": 30,
+    "start_time": "2025-05-24T23:41:51.523161",
+    "end_time": "2025-05-24T23:41:52.551480",
+    "goals": [
+      "Test session workflow"
+    ],
+    "completed_goals": [
+      "Test session workflow"
+    ],
+    "focus_score": 85,
+    "notes": "Test completed successfully",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "78b764a8-5671-49c2-9d08-6c2ff520cc9b",
+    "subject": "Test Mathematics",
+    "duration_minutes": 25,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Complete algebra problems",
+      "Review calculus"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "8dd0c628-159c-40c9-955b-6e19c3fb7353",
+    "subject": "Workflow Test",
+    "duration_minutes": 30,
+    "start_time": "2025-05-24T23:43:14.728106",
+    "end_time": "2025-05-24T23:43:15.763358",
+    "goals": [
+      "Test session workflow"
+    ],
+    "completed_goals": [
+      "Test session workflow"
+    ],
+    "focus_score": 85,
+    "notes": "Test completed successfully",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "d2eb44fe-8efd-48a4-843c-9390dd3cfe48",
+    "subject": "Test Mathematics",
+    "duration_minutes": 25,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Complete algebra problems",
+      "Review calculus"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "6f721282-d08a-44dd-9ad3-f72a161ad489",
+    "subject": "Workflow Test",
+    "duration_minutes": 30,
+    "start_time": "2025-05-24T23:56:13.644883",
+    "end_time": "2025-05-24T23:56:14.666007",
+    "goals": [
+      "Test session workflow"
+    ],
+    "completed_goals": [
+      "Test session workflow"
+    ],
+    "focus_score": 85,
+    "notes": "Test completed successfully",
+    "distractions": 0,
+    "breaks_taken": 0
+  }
+]
