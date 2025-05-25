@@ -97,5 +97,285 @@
     "notes": "Test completed successfully",
     "distractions": 0,
     "breaks_taken": 0
+  },
+  {
+    "id": "b086c19b-e961-4172-84a1-4627aa9c7f86",
+    "subject": "Computer Science",
+    "duration_minutes": 45,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Quick study session"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "Quick start session from dashboard",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "5b1271bf-a743-4eda-b3b8-b016d724393d",
+    "subject": "Math",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T10:51:15.594639",
+    "end_time": null,
+    "goals": [],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "afd8fbc7-29f4-40ab-b489-706ab1ff98a5",
+    "subject": "Mathematics",
+    "duration_minutes": 25,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Quick study session"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "Quick start session from dashboard",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "0c376e56-af45-4825-9955-f1277114ccbe",
+    "subject": "Test Mathematics",
+    "duration_minutes": 25,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Complete algebra problems",
+      "Review calculus"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "1c018651-a354-410b-ac6f-a19e02b87fc6",
+    "subject": "Workflow Test",
+    "duration_minutes": 30,
+    "start_time": "2025-05-25T10:59:15.638050",
+    "end_time": "2025-05-25T10:59:16.671038",
+    "goals": [
+      "Test session workflow"
+    ],
+    "completed_goals": [
+      "Test session workflow"
+    ],
+    "focus_score": 85,
+    "notes": "Test completed successfully",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "ed4d5bd3-67e4-4a68-a28b-684274c4d3e8",
+    "subject": "CS",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T11:12:35.460588",
+    "end_time": null,
+    "goals": [],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "f76b3e90-052c-415a-87fd-9349fffc2ff6",
+    "subject": "Maths",
+    "duration_minutes": 15,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Trignometry"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "e54dc449-a7ad-4e0e-be68-f727b93318b3",
+    "subject": "Math",
+    "duration_minutes": 15,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Study"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "ac058625-9d66-4dbf-b4b4-55a66b459eab",
+    "subject": "Math",
+    "duration_minutes": 15,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Trigno"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "00c2afee-6447-490b-bdb5-04be18ca0eba",
+    "subject": "CLI Test",
+    "duration_minutes": 25,
+    "start_time": null,
+    "end_time": null,
+    "goals": [],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "a8be1089-fc6d-4baa-9b3c-cbe19db3f5d3",
+    "subject": "Mathematics",
+    "duration_minutes": 15,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Trignometry"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "ca864b51-d280-4861-b543-772ad66c2834",
+    "subject": "CLI Test",
+    "duration_minutes": 25,
+    "start_time": null,
+    "end_time": null,
+    "goals": [],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "96c0e01c-2544-4afb-a048-cf91a1a9a48b",
+    "subject": "Math",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T12:00:23.072521",
+    "end_time": "2025-05-25T12:01:12.773644",
+    "goals": [
+      "Trigno"
+    ],
+    "completed_goals": [],
+    "focus_score": 50,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "73a1151f-357e-41bd-94af-465416a31d9e",
+    "subject": "Science",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T12:07:24.948292",
+    "end_time": null,
+    "goals": [
+      "Bio"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "65ef2e2b-6973-4288-9645-ca5090e17db0",
+    "subject": "Math",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T12:39:26.705336",
+    "end_time": null,
+    "goals": [
+      "Trigno"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "3df8b2f8-27f4-4dce-9886-bf486872f593",
+    "subject": "Science",
+    "duration_minutes": 15,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Bio"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "6e0026b8-da1a-471e-a6fb-6bbf1213c0cb",
+    "subject": "Math",
+    "duration_minutes": 15,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "trogno"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "c1fdb47f-cf32-4cbc-bfff-b1183ac9d06f",
+    "subject": "math",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T15:30:46.054525",
+    "end_time": "2025-05-25T15:33:42.791719",
+    "goals": [
+      "trig"
+    ],
+    "completed_goals": [],
+    "focus_score": 50,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "5761bc8e-b796-4fd2-9176-ee7612e5b83a",
+    "subject": "math",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T15:35:26.640065",
+    "end_time": "2025-05-25T15:35:43.296049",
+    "goals": [
+      "Complete math study session"
+    ],
+    "completed_goals": [],
+    "focus_score": 99,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
   }
 ]

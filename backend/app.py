@@ -9,9 +9,44 @@ import os
 from config import Config
 from models import StudySession, StudyPlan
 from utils import load_json_data, save_json_data, initialize_data_files
+from flask_cors import CORS
+# Add this after the imports and before create_app()
+import sys
+import platform
+
+def check_admin_permissions():
+    """Check if running with admin permissions for website blocking"""
+    if platform.system() == "Windows":
+        try:
+            import ctypes
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+    else:  # Linux/macOS
+        return os.geteuid() == 0
+
+def warn_about_permissions():
+    """Warn user about permissions needed for website blocking"""
+    if not check_admin_permissions():
+        print("\n" + "="*60)
+        print("⚠️  WARNING: Website blocking requires administrator privileges")
+        print("🔧 For full functionality:")
+        if platform.system() == "Windows":
+            print("   - Run Command Prompt as Administrator")
+            print("   - Then run: python run.py")
+        else:
+            print("   - Run with: sudo python run.py")
+        print("   - Website blocking will be disabled without admin rights")
+        print("="*60)
+        return False
+    else:
+        print("✅ Running with administrator privileges - all features available")
+        return True
+
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(Config)
     
     # Enable CORS for Angular frontend

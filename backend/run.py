@@ -8,11 +8,46 @@ app = create_app()
 
 # Set startup time for health checks
 app.config['STARTUP_TIME'] = datetime.now().isoformat()
+# Add this after the imports and before create_app()
+import sys
+import platform
+
+def check_admin_permissions():
+    """Check if running with admin permissions for website blocking"""
+    if platform.system() == "Windows":
+        try:
+            import ctypes
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+    else:  # Linux/macOS
+        return os.geteuid() == 0
+
+def warn_about_permissions():
+    """Warn user about permissions needed for website blocking"""
+    if not check_admin_permissions():
+        print("\n" + "="*60)
+        print("⚠️  WARNING: Website blocking requires administrator privileges")
+        print("🔧 For full functionality:")
+        if platform.system() == "Windows":
+            print("   - Run Command Prompt as Administrator")
+            print("   - Then run: python run.py")
+        else:
+            print("   - Run with: sudo python run.py")
+        print("   - Website blocking will be disabled without admin rights")
+        print("="*60)
+        return False
+    else:
+        print("✅ Running with administrator privileges - all features available")
+        return True
+
+# Add this call in your run.py file
 
 def initialize_services():
     """Initialize services when the app starts"""
     print("Initializing Smart Study Orchestrator...")
-    
+    has_admin = warn_about_permissions()
+
     # Initialize MCP connections (non-blocking)
     try:
         # Create new event loop to avoid conflicts

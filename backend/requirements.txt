@@ -1,13 +1,25 @@
-Flask==2.3.3
-Flask-CORS==4.0.0
-python-dotenv==1.0.0
-requests==2.31.0
-schedule==1.2.0
+# Flask==2.3.3
+# Flask-CORS==4.0.0
+# python-dotenv==1.0.0
+# requests==2.31.0
+# schedule==1.2.0
 
-# Optional dependencies (install for enhanced features)
+# # Optional dependencies (install for enhanced features)
 # groq==0.4.1
 # google-api-python-client==2.108.0
 # google-auth-httplib2==0.1.1
 # google-auth-oauthlib==1.1.0
 # selenium==4.15.2
 # psutil==5.9.6
+# Existing dependencies
+Flask
+Flask-CORS
+python-dotenv
+requests
+schedule
+# New real integration dependencies
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+groq
+psutil
