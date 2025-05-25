@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html ng-app="studyOrchestratorApp" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study Orchestrator</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/neon-punk.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+    
+    <!-- AngularJS and Dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body class="neon-body">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-container">
+            <div class="neon-logo">
+                <i class="fas fa-brain"></i>
+                <h1>SMART STUDY ORCHESTRATOR</h1>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-text">Initializing AI Systems...</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container" ng-controller="MainController">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" ng-class="{'collapsed': sidebarCollapsed}">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-brain neon-icon"></i>
+                    <span ng-show="!sidebarCollapsed">SSO</span>
+                </div>
+                <button class="sidebar-toggle" ng-click="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+<!-- Update the nav-menu section in index.html -->
+<ul class="nav-menu">
+    <li ng-class="{'active': isActive('/dashboard')}">
+        <a href="#!/dashboard" class="nav-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span ng-show="!sidebarCollapsed">Dashboard</span>
+        </a>
+    </li>
+    <li ng-class="{'active': isActive('/sessions')}">
+        <a href="#!/sessions" class="nav-link">
+            <i class="fas fa-play"></i>
+            <span ng-show="!sidebarCollapsed">Sessions</span>
+        </a>
+    </li>
+    <li ng-class="{'active': isActive('/analytics')}">
+        <a href="#!/analytics" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span ng-show="!sidebarCollapsed">Analytics</span>
+        </a>
+    </li>
+    <li ng-class="{'active': isActive('/calendar')}">
+        <a href="#!/calendar" class="nav-link">
+            <i class="fas fa-calendar"></i>
+            <span ng-show="!sidebarCollapsed">Calendar</span>
+        </a>
+    </li>
+    <li ng-class="{'active': isActive('/preferences')}">
+        <a href="#!/preferences" class="nav-link">
+            <i class="fas fa-cog"></i>
+            <span ng-show="!sidebarCollapsed">Settings</span>
+        </a>
+    </li>
+    <li ng-class="{'active': isActive('/tools')}">
+        <a href="#!/tools" class="nav-link">
+            <i class="fas fa-tools"></i>
+            <span ng-show="!sidebarCollapsed">Tools</span>
+        </a>
+    </li>
+</ul>
+
+            
+            <!-- System Status -->
+            <div class="system-status" ng-show="!sidebarCollapsed">
+                <h4>System Status</h4>
+                <div class="status-item">
+                    <span class="status-dot" ng-class="systemStatus.backend ? 'online' : 'offline'"></span>
+                    Backend
+                </div>
+                <div class="status-item">
+                    <span class="status-dot" ng-class="systemStatus.ai ? 'online' : 'warning'"></span>
+                    AI Assistant
+                </div>
+                <div class="status-item">
+                    <span class="status-dot" ng-class="systemStatus.mcp ? 'online' : 'warning'"></span>
+                    MCP Services
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="breadcrumb">
+                    <span ng-bind="currentPageTitle"></span>
+                </div>
+                <div class="top-controls">
+                    <button class="neon-btn primary" ng-click="quickStartSession()">
+                        <i class="fas fa-rocket"></i> Quick Start
+                    </button>
+                    <div class="user-info">
+                        <span class="user-name">Study Mode</span>
+                        <div class="avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <div ng-view class="fade-in"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" ng-show="modal.show" ng-click="closeModal()">
+        <div class="modal neon-modal" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3 ng-bind="modal.title"></h3>
+                <button class="modal-close" ng-click="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" ng-bind-html="modal.content"></div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="notifications-container">
+        <div class="notification" 
+             ng-repeat="notification in notifications" 
+             ng-class="notification.type"
+             ng-show="notification.show">
+            <i class="fas" ng-class="getNotificationIcon(notification.type)"></i>
+            <span ng-bind="notification.message"></span>
+            <button ng-click="dismissNotification($index)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- App Scripts -->
+    <script src="app/app.js"></script>
+    <script src="app/services/api.service.js"></script>
+    <script src="app/services/notification.service.js"></script>
+    <script src="app/controllers/dashboard.controller.js"></script>
+    <script src="app/controllers/sessions.controller.js"></script>
+    <script src="app/controllers/analytics.controller.js"></script>
+    <script src="app/controllers/calendar.controller.js"></script>
+    <script src="app/controllers/preferences.controller.js"></script>
+    <script src="app/controllers/tools.controller.js"></script>
+    <script src="app/directives/neon-components.directive.js"></script>
+
+    <script>
+        // Hide loading screen when app is ready
+        angular.element(document).ready(function() {
+            setTimeout(function() {
+                document.getElementById('loading-screen').style.display = 'none';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

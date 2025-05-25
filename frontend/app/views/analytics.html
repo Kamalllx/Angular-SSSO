@@ -1,0 +1,241 @@
+<div class="analytics-container">
+    <!-- Time Filter Controls -->
+    <div class="neon-card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-chart-line neon-blue"></i>
+                Study Analytics & Insights
+            </h3>
+            <div class="time-filters">
+                <button class="neon-btn" ng-class="timeFilter === 'week' ? 'primary' : 'secondary'" 
+                        ng-click="changeTimeFilter('week')">
+                    Week
+                </button>
+                <button class="neon-btn" ng-class="timeFilter === 'month' ? 'primary' : 'secondary'" 
+                        ng-click="changeTimeFilter('month')">
+                    Month
+                </button>
+                <button class="neon-btn" ng-class="timeFilter === 'year' ? 'primary' : 'secondary'" 
+                        ng-click="changeTimeFilter('year')">
+                    Year
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div ng-show="loading" class="text-center p-4">
+        <div class="spinner"></div>
+        <p class="mt-2 text-muted">Loading analytics...</p>
+    </div>
+
+    <div ng-hide="loading">
+        <!-- Key Metrics -->
+        <div class="stats-grid mb-4">
+            <div class="stat-card">
+                <div class="stat-value neon-blue">{{analytics.weekly_stats.total_sessions || 0}}</div>
+                <div class="stat-label">Total Sessions</div>
+                <div class="stat-change">+12% from last week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value neon-green">{{analytics.weekly_stats.total_hours || 0}}h</div>
+                <div class="stat-label">Study Hours</div>
+                <div class="stat-change">+8% from last week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value neon-pink">{{analytics.weekly_stats.avg_focus || 0}}%</div>
+                <div class="stat-label">Average Focus</div>
+                <div class="stat-change">+5% from last week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value neon-purple">{{analytics.weekly_stats.total_goals_completed || 0}}</div>
+                <div class="stat-label">Goals Completed</div>
+                <div class="stat-change">+15% from last week</div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-2 mb-4">
+            <!-- Weekly Progress Chart -->
+            <div class="neon-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-chart-line neon-blue"></i> Weekly Progress</h4>
+                </div>
+                <div class="chart-container">
+                    <canvas id="weeklyProgressChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Focus Distribution -->
+            <div class="neon-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-brain neon-green"></i> Focus Distribution</h4>
+                </div>
+                <div class="chart-container">
+                    <canvas id="focusChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subject Performance -->
+        <div class="neon-card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-books neon-purple"></i> Subject Performance</h4>
+            </div>
+            <div class="chart-container">
+                <canvas id="subjectChart" width="800" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="grid grid-2">
+            <!-- Recommendations -->
+            <div class="neon-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-robot neon-pink"></i> AI Recommendations</h4>
+                </div>
+                <div ng-show="!analytics.recommendations || Object.keys(analytics.recommendations).length === 0">
+                    <div class="text-center p-4">
+                        <i class="fas fa-lightbulb fa-3x neon-yellow mb-3"></i>
+                        <p class="text-muted">Complete more study sessions to get personalized AI recommendations!</p>
+                    </div>
+                </div>
+                <div ng-show="analytics.recommendations && Object.keys(analytics.recommendations).length > 0">
+                    <div class="recommendation-item" ng-show="analytics.recommendations.study_schedule">
+                        <div class="rec-header">
+                            <i class="fas fa-calendar neon-blue"></i>
+                            <strong>Study Schedule</strong>
+                        </div>
+                        <p>{{analytics.recommendations.study_schedule}}</p>
+                    </div>
+                    <div class="recommendation-item" ng-show="analytics.recommendations.break_frequency">
+                        <div class="rec-header">
+                            <i class="fas fa-pause neon-green"></i>
+                            <strong>Break Timing</strong>
+                        </div>
+                        <p>{{analytics.recommendations.break_frequency}}</p>
+                    </div>
+                    <div class="recommendation-item" ng-show="analytics.recommendations.environment_tips && analytics.recommendations.environment_tips.length > 0">
+                        <div class="rec-header">
+                            <i class="fas fa-home neon-orange"></i>
+                            <strong>Environment Tips</strong>
+                        </div>
+                        <ul class="tips-list">
+                            <li ng-repeat="tip in analytics.recommendations.environment_tips">{{tip}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Focus Insights -->
+            <div class="neon-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-eye neon-cyan"></i> Focus Insights</h4>
+                </div>
+                <div ng-show="analytics.focus_insights && Object.keys(analytics.focus_insights).length > 0">
+                    <div class="insight-item" ng-show="analytics.focus_insights.distraction_patterns && analytics.focus_insights.distraction_patterns.length > 0">
+                        <div class="insight-header">
+                            <i class="fas fa-exclamation-triangle neon-red"></i>
+                            <strong>Common Distractions</strong>
+                        </div>
+                        <ul class="insights-list">
+                            <li ng-repeat="pattern in analytics.focus_insights.distraction_patterns">{{pattern}}</li>
+                        </ul>
+                    </div>
+                    <div class="insight-item" ng-show="analytics.focus_insights.improvement_areas && analytics.focus_insights.improvement_areas.length > 0">
+                        <div class="insight-header">
+                            <i class="fas fa-arrow-up neon-green"></i>
+                            <strong>Areas for Improvement</strong>
+                        </div>
+                        <ul class="insights-list">
+                            <li ng-repeat="area in analytics.focus_insights.improvement_areas">{{area}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div ng-show="!analytics.focus_insights || Object.keys(analytics.focus_insights).length === 0">
+                    <div class="text-center p-4">
+                        <i class="fas fa-search fa-3x neon-blue mb-3"></i>
+                        <p class="text-muted">More data needed for focus insights</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="neon-card mt-4">
+            <div class="card-header">
+                <h4><i class="fas fa-download neon-orange"></i> Export Data</h4>
+            </div>
+            <div class="export-options">
+                <button class="neon-btn primary" ng-click="exportData()">
+                    <i class="fas fa-file-csv"></i> Export Analytics (CSV)
+                </button>
+                <button class="neon-btn secondary ml-2" ng-click="loadAnalytics()">
+                    <i class="fas fa-sync"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chart-container {
+    position: relative;
+    height: 300px;
+    padding: 1rem;
+}
+
+.chart-container canvas {
+    max-height: 100%;
+}
+
+.recommendation-item, .insight-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rec-header, .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.tips-list, .insights-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tips-list li, .insights-list li {
+    padding: 0.25rem 0;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.tips-list li::before, .insights-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--neon-blue);
+}
+
+.stat-change {
+    font-size: 0.75rem;
+    color: var(--neon-green);
+    margin-top: 0.25rem;
+}
+
+.time-filters {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.export-options {
+    padding: 1rem;
+}
+</style>

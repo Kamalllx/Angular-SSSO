@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Check</title>
+</head>
+<body>
+    <h1>Healthy</h1>
+    <p>Frontend is running normally</p>
+    <script>
+        // Return 200 status
+        if (window.location.search.includes('json')) {
+            document.body.innerHTML = '{"status": "healthy", "timestamp": "' + new Date().toISOString() + '"}';
+            document.body.style.fontFamily = 'monospace';
+        }
+    </script>
+</body>
+</html>

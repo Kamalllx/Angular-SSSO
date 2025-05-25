@@ -1,0 +1,518 @@
+<div class="preferences-container">
+    <!-- Preferences Header -->
+    <div class="neon-card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-cog neon-blue"></i>
+                Settings & Preferences
+            </h3>
+            <div class="settings-actions">
+                <button class="neon-btn secondary" ng-click="resetToDefaults()">
+                    <i class="fas fa-undo"></i> Reset to Defaults
+                </button>
+                <button class="neon-btn primary" ng-click="savePreferences()" ng-disabled="loading">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div ng-show="loading" class="text-center p-4">
+        <div class="spinner"></div>
+        <p class="mt-2 text-muted">Loading preferences...</p>
+    </div>
+
+    <div ng-hide="loading">
+        <!-- Tabs Navigation -->
+        <div class="neon-card mb-3">
+            <div class="tabs-nav">
+                <button class="tab-btn" ng-class="{'active': activeTab === 'general'}" ng-click="setTab('general')">
+                    <i class="fas fa-sliders-h"></i> General
+                </button>
+                <button class="tab-btn" ng-class="{'active': activeTab === 'blocking'}" ng-click="setTab('blocking')">
+                    <i class="fas fa-ban"></i> Website Blocking
+                </button>
+                <button class="tab-btn" ng-class="{'active': activeTab === 'techniques'}" ng-click="setTab('techniques')">
+                    <i class="fas fa-brain"></i> Focus Techniques
+                </button>
+                <button class="tab-btn" ng-class="{'active': activeTab === 'data'}" ng-click="setTab('data')">
+                    <i class="fas fa-database"></i> Data Management
+                </button>
+            </div>
+        </div>
+
+        <!-- General Settings Tab -->
+        <div ng-show="activeTab === 'general'" class="tab-content">
+            <div class="grid grid-2">
+                <!-- Study Preferences -->
+                <div class="neon-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-clock neon-green"></i> Study Preferences</h4>
+                    </div>
+                    <div class="settings-group">
+                        <div class="form-group">
+                            <label>Default Study Duration</label>
+                            <select class="neon-select" ng-model="preferences.default_study_duration">
+                                <option ng-repeat="duration in getDurationOptions()" value="{{duration}}">
+                                    {{duration}} minutes
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Default Break Duration</label>
+                            <select class="neon-select" ng-model="preferences.default_break_duration">
+                                <option ng-repeat="duration in getBreakDurationOptions()" value="{{duration}}">
+                                    {{duration}} minutes
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Preferred Study Times</label>
+                            <div class="time-slots">
+                                <div ng-repeat="time in preferences.preferred_study_times track by $index" class="time-slot">
+                                    <input type="time" class="neon-input" ng-model="preferences.preferred_study_times[$index]">
+                                    <button class="neon-btn danger small" ng-click="preferences.preferred_study_times.splice($index, 1)"
+                                            ng-show="preferences.preferred_study_times.length > 1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <button class="neon-btn secondary" ng-click="preferences.preferred_study_times.push('09:00')"
+                                        ng-show="preferences.preferred_study_times.length < 5">
+                                    <i class="fas fa-plus"></i> Add Time Slot
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Preferences -->
+                <div class="neon-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-cogs neon-purple"></i> System Preferences</h4>
+                    </div>
+                    <div class="settings-group">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" ng-model="preferences.notifications_enabled">
+                                <span class="checkmark"></span>
+                                Enable Notifications
+                            </label>
+                            <p class="setting-description">Get notifications for session reminders and achievements</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" ng-model="preferences.auto_block_websites">
+                                <span class="checkmark"></span>
+                                Auto-block Websites During Study
+                            </label>
+                            <p class="setting-description">Automatically block distracting websites when starting study sessions</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Theme Preference</label>
+                            <select class="neon-select" ng-model="preferences.theme">
+                                <option value="neon-punk">Neon Punk (Default)</option>
+                                <option value="neon-blue">Blue Neon</option>
+                                <option value="neon-green">Green Neon</option>
+                                <option value="neon-purple">Purple Neon</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Website Blocking Tab -->
+        <div ng-show="activeTab === 'blocking'" class="tab-content">
+            <div class="neon-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-ban neon-red"></i> Website Blocking Settings</h4>
+                </div>
+                
+                <!-- Add Website Form -->
+                <div class="add-website-form">
+                    <div class="form-group">
+                        <label>Add Website to Block List</label>
+                        <div class="input-group">
+                            <input type="text" class="neon-input" ng-model="newWebsite" 
+                                   placeholder="e.g., facebook.com, youtube.com"
+                                   ng-keypress="$event.keyCode === 13 && addWebsite()">
+                            <button class="neon-btn primary" ng-click="addWebsite()">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="neon-btn secondary" ng-click="addDefaultWebsites()">
+                            <i class="fas fa-magic"></i> Add Default Websites
+                        </button>
+                        <button class="neon-btn danger" ng-click="clearWebsites()" 
+                                ng-show="preferences.distracting_websites.length > 0">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Blocked Websites List -->
+                <div class="blocked-websites">
+                    <h5>Currently Blocked Websites ({{preferences.distracting_websites.length}})</h5>
+                    <div ng-show="preferences.distracting_websites.length === 0" class="empty-state">
+                        <i class="fas fa-shield-alt fa-3x neon-blue mb-3"></i>
+                        <p class="text-muted">No websites in block list</p>
+                        <p class="text-muted">Add websites that distract you during study sessions</p>
+                    </div>
+                    <div ng-show="preferences.distracting_websites.length > 0" class="websites-grid">
+                        <div ng-repeat="website in preferences.distracting_websites track by $index" 
+                             class="website-item">
+                            <div class="website-info">
+                                <i class="fas fa-globe neon-red"></i>
+                                <span class="website-url">{{website}}</span>
+                            </div>
+                            <button class="neon-btn danger small" ng-click="removeWebsite($index)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus Techniques Tab -->
+        <div ng-show="activeTab === 'techniques'" class="tab-content">
+            <div class="neon-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-brain neon-green"></i> Focus Techniques</h4>
+                </div>
+                
+                <!-- Add Technique Form -->
+                <div class="add-technique-form">
+                    <div class="form-group">
+                        <label>Add Focus Technique</label>
+                        <div class="input-group">
+                            <input type="text" class="neon-input" ng-model="newTechnique" 
+                                   placeholder="e.g., Deep breathing, Music, etc."
+                                   ng-keypress="$event.keyCode === 13 && addTechnique()">
+                            <button class="neon-btn primary" ng-click="addTechnique()">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="neon-btn secondary" ng-click="addDefaultTechniques()">
+                            <i class="fas fa-magic"></i> Add Default Techniques
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Techniques List -->
+                <div class="focus-techniques">
+                    <h5>Your Focus Techniques ({{preferences.focus_techniques.length}})</h5>
+                    <div ng-show="preferences.focus_techniques.length === 0" class="empty-state">
+                        <i class="fas fa-lightbulb fa-3x neon-yellow mb-3"></i>
+                        <p class="text-muted">No focus techniques added</p>
+                        <p class="text-muted">Add techniques that help you concentrate better</p>
+                    </div>
+                    <div ng-show="preferences.focus_techniques.length > 0" class="techniques-grid">
+                        <div ng-repeat="technique in preferences.focus_techniques track by $index" 
+                             class="technique-item">
+                            <div class="technique-info">
+                                <i class="fas fa-star neon-yellow"></i>
+                                <span class="technique-name">{{technique}}</span>
+                            </div>
+                            <button class="neon-btn danger small" ng-click="removeTechnique($index)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management Tab -->
+        <div ng-show="activeTab === 'data'" class="tab-content">
+            <div class="grid grid-2">
+                <!-- Export/Import -->
+                <div class="neon-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-download neon-blue"></i> Export & Import</h4>
+                    </div>
+                    <div class="data-actions">
+                        <div class="action-item">
+                            <h5>Export Preferences</h5>
+                            <p class="text-muted">Download your preferences as a JSON file</p>
+                            <button class="neon-btn primary" ng-click="exportPreferences()">
+                                <i class="fas fa-download"></i> Export Preferences
+                            </button>
+                        </div>
+                        
+                        <div class="action-item">
+                            <h5>Import Preferences</h5>
+                            <p class="text-muted">Upload a preferences file to restore settings</p>
+                            <input type="file" id="import-file" accept=".json" 
+                                   style="display: none" 
+                                   onchange="angular.element(this).scope().importPreferences(this.files[0])">
+                            <button class="neon-btn secondary" onclick="document.getElementById('import-file').click()">
+                                <i class="fas fa-upload"></i> Import Preferences
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Statistics -->
+                <div class="neon-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-chart-bar neon-purple"></i> Data Statistics</h4>
+                    </div>
+                    <div class="data-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Blocked Websites:</span>
+                            <span class="stat-value">{{preferences.distracting_websites.length}}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Focus Techniques:</span>
+                            <span class="stat-value">{{preferences.focus_techniques.length}}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Study Time Slots:</span>
+                            <span class="stat-value">{{preferences.preferred_study_times.length}}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Default Study Duration:</span>
+                            <span class="stat-value">{{preferences.default_study_duration}} min</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Default Break Duration:</span>
+                            <span class="stat-value">{{preferences.default_break_duration}} min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tabs-nav {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn {
+    background: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-muted);
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-btn:hover {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+}
+
+.tab-btn.active {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+    background: rgba(0, 243, 255, 0.1);
+    text-shadow: var(--glow-size) var(--neon-blue);
+}
+
+.settings-group {
+    padding: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--neon-blue);
+    border-radius: 4px;
+    position: relative;
+    transition: var(--transition);
+}
+
+.checkbox-label input:checked + .checkmark {
+    background: var(--neon-blue);
+    box-shadow: var(--glow-size) var(--neon-blue);
+}
+
+.checkbox-label input:checked + .checkmark::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--dark-bg);
+    font-weight: bold;
+}
+
+.setting-description {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    margin-left: 2.75rem;
+}
+
+.time-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.time-slot {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-group .neon-input {
+    flex: 1;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.websites-grid, .techniques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.website-item, .technique-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: var(--transition);
+}
+
+.website-item:hover, .technique-item:hover {
+    border-color: var(--neon-blue);
+    transform: translateX(2px);
+}
+
+.website-info, .technique-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.website-url, .technique-name {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.neon-btn.small {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.data-actions {
+    padding: 1rem;
+}
+
+.action-item {
+    margin-bottom: 2rem;
+}
+
+.action-item h5 {
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+}
+
+.data-stats {
+    padding: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    color: var(--text-muted);
+}
+
+.stat-value {
+    color: var(--neon-blue);
+    font-weight: 600;
+}
+
+.settings-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .tabs-nav {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+    }
+    
+    .websites-grid, .techniques-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .settings-actions {
+        flex-direction: column;
+    }
+}
+</style>

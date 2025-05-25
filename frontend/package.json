@@ -1,0 +1,13 @@
+{
+    "name": "smart-study-orchestrator-frontend",
+    "version": "1.0.0",
+    "description": "Neon-punk themed AngularJS frontend for Smart Study Orchestrator",
+    "main": "index.html",
+    "scripts": {
+      "start": "python -m http.server 8080",
+      "dev": "python -m http.server 8080"
+    },
+    "dependencies": {},
+    "devDependencies": {}
+  }
+  

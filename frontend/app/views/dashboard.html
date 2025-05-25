@@ -1,0 +1,243 @@
+<div class="dashboard-container" ng-hide="loading">
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value neon-blue">{{dashboardData.weeklyStats.total_sessions || 0}}</div>
+            <div class="stat-label">Total Sessions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value neon-green">{{dashboardData.weeklyStats.total_hours || 0}}h</div>
+            <div class="stat-label">Study Hours</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value neon-pink">{{dashboardData.weeklyStats.avg_focus || 0}}%</div>
+            <div class="stat-label">Average Focus</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value neon-purple">{{dashboardData.weeklyStats.total_goals_completed || 0}}</div>
+            <div class="stat-label">Goals Completed</div>
+        </div>
+    </div>
+
+    <div class="grid grid-2">
+        <!-- Quick Start -->
+        <div class="neon-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-rocket neon-blue"></i>
+                    Quick Start
+                </h3>
+            </div>
+            <div class="quick-start-grid grid-3">
+                <button class="neon-btn {{option.color}}" 
+                        ng-repeat="option in dashboardData.quickStartOptions"
+                        ng-click="quickStart(option.name)">
+                    <i class="fas {{option.icon}}"></i>
+                    {{option.name}}
+                </button>
+            </div>
+        </div>
+
+        <!-- Today's Sessions -->
+        <div class="neon-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-day neon-green"></i>
+                    Today's Sessions
+                </h3>
+            </div>
+            <div ng-show="dashboardData.todaySessions.length === 0" class="text-center p-4">
+                <i class="fas fa-calendar-plus fa-3x neon-blue mb-3"></i>
+                <p class="text-muted">No study sessions today</p>
+                <button class="neon-btn primary" ng-click="quickStartSession()">
+                    <i class="fas fa-plus"></i> Create Session
+                </button>
+            </div>
+            <div ng-show="dashboardData.todaySessions.length > 0">
+                <div class="session-item" ng-repeat="session in dashboardData.todaySessions">
+                    <div class="session-header">
+                        <h4>{{session.subject}}</h4>
+                        <span class="session-status" ng-class="getSessionStatusClass(session)">
+                            {{getSessionStatusClass(session)}}
+                        </span>
+                    </div>
+                    <div class="session-meta">
+                        <span><i class="fas fa-clock"></i> {{formatDuration(session.duration_minutes)}}</span>
+                        <span ng-show="session.start_time">
+                            <i class="fas fa-play"></i> {{formatTime(session.start_time)}}
+                        </span>
+                        <span ng-show="session.focus_score">
+                            <i class="fas fa-brain"></i> {{session.focus_score}}% focus
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-2">
+        <!-- AI Recommendations -->
+        <div class="neon-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-robot neon-pink"></i>
+                    AI Recommendations
+                </h3>
+            </div>
+            <div ng-show="!dashboardData.recommendations || Object.keys(dashboardData.recommendations).length === 0">
+                <div class="text-center p-4">
+                    <i class="fas fa-lightbulb fa-3x neon-yellow mb-3"></i>
+                    <p class="text-muted">Complete a few study sessions to get personalized AI recommendations!</p>
+                </div>
+            </div>
+            <div ng-show="dashboardData.recommendations && Object.keys(dashboardData.recommendations).length > 0">
+                <div ng-show="dashboardData.recommendations.study_schedule" class="mb-3">
+                    <h4 class="neon-blue"><i class="fas fa-calendar"></i> Schedule</h4>
+                    <p>{{dashboardData.recommendations.study_schedule}}</p>
+                </div>
+                <div ng-show="dashboardData.recommendations.break_frequency" class="mb-3">
+                    <h4 class="neon-green"><i class="fas fa-pause"></i> Breaks</h4>
+                    <p>{{dashboardData.recommendations.break_frequency}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="neon-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-heartbeat neon-red"></i>
+                    System Health
+                </h3>
+            </div>
+            <div class="system-health">
+                <div class="health-item">
+                    <span class="status-dot" ng-class="systemStatus.backend ? 'online' : 'offline'"></span>
+                    <span>Backend API</span>
+                    <span class="status-text" ng-class="systemStatus.backend ? 'neon-green' : 'neon-red'">
+                        {{systemStatus.backend ? 'Online' : 'Offline'}}
+                    </span>
+                </div>
+                <div class="health-item">
+                    <span class="status-dot" ng-class="systemStatus.ai ? 'online' : 'warning'"></span>
+                    <span>AI Assistant</span>
+                    <span class="status-text" ng-class="systemStatus.ai ? 'neon-green' : 'neon-orange'">
+                        {{systemStatus.ai ? 'Available' : 'Mock Mode'}}
+                    </span>
+                </div>
+                <div class="health-item">
+                    <span class="status-dot" ng-class="systemStatus.mcp ? 'online' : 'warning'"></span>
+                    <span>MCP Services</span>
+                    <span class="status-text" ng-class="systemStatus.mcp ? 'neon-green' : 'neon-orange'">
+                        {{systemStatus.mcp ? 'Connected' : 'Mock Mode'}}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading State -->
+<div ng-show="loading" class="text-center p-4">
+    <div class="spinner"></div>
+    <p class="mt-2 text-muted">Loading dashboard...</p>
+</div>
+
+<style>
+.session-item {
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.session-item:hover {
+    border-color: var(--neon-blue);
+    transform: translateX(4px);
+}
+
+.session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.session-header h4 {
+    margin: 0;
+    color: var(--text-light);
+}
+
+.session-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.session-status.completed {
+    background: rgba(57, 255, 20, 0.2);
+    color: var(--neon-green);
+}
+
+.session-status.active {
+    background: rgba(0, 243, 255, 0.2);
+    color: var(--neon-blue);
+}
+
+.session-status.scheduled {
+    background: rgba(255, 149, 0, 0.2);
+    color: var(--neon-orange);
+}
+
+.session-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.session-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.health-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.health-item:last-child {
+    border-bottom: none;
+}
+
+.status-text {
+    margin-left: auto;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.quick-start-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.quick-start-grid .neon-btn {
+    flex-direction: column;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    min-height: 80px;
+}
+
+.quick-start-grid .neon-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+</style>

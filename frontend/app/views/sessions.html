@@ -1,0 +1,358 @@
+<div class="sessions-container">
+    <!-- Session Creation -->
+    <div class="neon-card" ng-show="showNewSessionForm">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-plus-circle neon-blue"></i>
+                Create New Study Session
+            </h3>
+            <button class="neon-btn secondary" ng-click="showNewSessionForm = false">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+        </div>
+        <form ng-submit="createSession()">
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" class="neon-input" ng-model="newSession.subject" 
+                       placeholder="What are you studying?" required>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <select class="neon-select" ng-model="newSession.duration">
+                        <option value="15">15 minutes</option>
+                        <option value="25">25 minutes (Pomodoro)</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                        <option value="120">2 hours</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" ng-model="newSession.blockWebsites"> 
+                        Block distracting websites
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Study Goals</label>
+                <div ng-repeat="goal in newSession.goals track by $index" class="goal-input">
+                    <input type="text" class="neon-input" ng-model="newSession.goals[$index]" 
+                           placeholder="Enter a specific goal">
+                    <button type="button" class="neon-btn danger" ng-click="removeGoal($index)" 
+                            ng-show="newSession.goals.length > 1">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <button type="button" class="neon-btn secondary" ng-click="addGoal()" 
+                        ng-show="newSession.goals.length < 5">
+                    <i class="fas fa-plus"></i> Add Goal
+                </button>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="neon-btn primary">
+                    <i class="fas fa-rocket"></i> Create Session
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Session Display -->
+    <div class="neon-card" ng-show="activeSession">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-play neon-green"></i>
+                {{activeSession.subject}}
+            </h3>
+            <span class="session-status" ng-class="isActive ? 'active' : 'paused'">
+                {{isActive ? (isPaused ? 'Paused' : 'Active') : 'Ready'}}
+            </span>
+        </div>
+        
+        <!-- Timer Display -->
+        <div class="timer-display">
+            <div class="timer-time" ng-class="{'warning': timeRemaining <= 60}">
+                {{formatTime(timeRemaining)}}
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" ng-class="getProgressColor()" 
+                     ng-style="{'width': getProgressPercentage() + '%'}"></div>
+            </div>
+            <div class="timer-controls">
+                <button class="neon-btn primary" ng-click="startSession(activeSession)" 
+                        ng-show="!isActive">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="neon-btn warning" ng-click="pauseSession()" 
+                        ng-show="isActive">
+                    <i class="fas fa-{{isPaused ? 'play' : 'pause'}}"></i> 
+                    {{isPaused ? 'Resume' : 'Pause'}}
+                </button>
+                <button class="neon-btn danger" ng-click="endSession()" 
+                        ng-show="isActive">
+                    <i class="fas fa-stop"></i> End Session
+                </button>
+            </div>
+        </div>
+
+        <!-- Session Goals -->
+        <div ng-show="activeSession.goals && activeSession.goals.length > 0" class="mt-4">
+            <h4><i class="fas fa-bullseye neon-pink"></i> Session Goals</h4>
+            <ul class="goals-list">
+                <li ng-repeat="goal in activeSession.goals">
+                    <i class="fas fa-target neon-blue"></i>
+                    {{goal}}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Study Plan -->
+        <div ng-show="activeSession.studyPlan" class="mt-4">
+            <h4><i class="fas fa-robot neon-purple"></i> AI Study Plan</h4>
+            <div class="study-plan">
+                <div ng-repeat="block in activeSession.studyPlan.study_blocks" 
+                     class="study-block" ng-class="block.type">
+                    <div class="block-header">
+                        <i class="fas fa-{{block.type === 'study' ? 'book' : 'coffee'}}"></i>
+                        <strong>{{block.activity}}</strong>
+                        <span class="duration">{{block.duration}} min</span>
+                    </div>
+                    <p class="block-description">{{block.description}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sessions List -->
+    <div class="neon-card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-list neon-blue"></i>
+                Study Sessions
+            </h3>
+            <button class="neon-btn primary" ng-click="showNewSessionForm = true" 
+                    ng-hide="showNewSessionForm">
+                <i class="fas fa-plus"></i> New Session
+            </button>
+        </div>
+        
+        <div ng-show="loading" class="text-center p-4">
+            <div class="spinner"></div>
+            <p class="mt-2 text-muted">Loading sessions...</p>
+        </div>
+
+        <div ng-hide="loading">
+            <div ng-show="sessions.length === 0" class="text-center p-4">
+                <i class="fas fa-clipboard-list fa-3x neon-blue mb-3"></i>
+                <p class="text-muted">No study sessions yet</p>
+                <button class="neon-btn primary" ng-click="showNewSessionForm = true">
+                    <i class="fas fa-plus"></i> Create Your First Session
+                </button>
+            </div>
+
+            <div ng-show="sessions.length > 0" class="sessions-grid">
+                <div class="session-card" ng-repeat="session in sessions | orderBy:'-start_time'" 
+                     ng-click="viewSessionDetails(session)">
+                    <div class="session-card-header">
+                        <h4>{{session.subject}}</h4>
+                        <span class="session-duration">{{session.duration_minutes}} min</span>
+                    </div>
+                    <div class="session-card-meta">
+                        <span ng-show="session.start_time">
+                            <i class="fas fa-clock"></i>
+                            {{session.start_time | date:'MMM d, HH:mm'}}
+                        </span>
+                        <span ng-show="session.focus_score">
+                            <i class="fas fa-brain"></i>
+                            {{session.focus_score}}%
+                        </span>
+                    </div>
+                    <div class="session-card-goals" ng-show="session.goals && session.goals.length > 0">
+                        <div class="goal-tag" ng-repeat="goal in session.goals | limitTo:2">
+                            {{goal}}
+                        </div>
+                        <span ng-show="session.goals.length > 2" class="more-goals">
+                            +{{session.goals.length - 2}} more
+                        </span>
+                    </div>
+                    <div class="session-card-status">
+                        <span class="status-badge" ng-class="getSessionStatusClass(session)">
+                            {{session.end_time ? 'Completed' : session.start_time ? 'Started' : 'Scheduled'}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.goal-input {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.goal-input .neon-input {
+    flex: 1;
+}
+
+.goals-list {
+    list-style: none;
+    padding: 0;
+}
+
+.goals-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.goals-list li:last-child {
+    border-bottom: none;
+}
+
+.study-plan {
+    margin-top: 1rem;
+}
+
+.study-block {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.study-block.study {
+    border-left: 4px solid var(--neon-blue);
+}
+
+.study-block.break {
+    border-left: 4px solid var(--neon-green);
+}
+
+.block-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.block-header .duration {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+.block-description {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.session-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.session-card:hover {
+    border-color: var(--neon-blue);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 243, 255, 0.2);
+}
+
+.session-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.session-card-header h4 {
+    margin: 0;
+    color: var(--text-light);
+}
+
+.session-duration {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: var(--neon-blue);
+}
+
+.session-card-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.session-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.session-card-goals {
+    margin-bottom: 1rem;
+}
+
+.goal-tag {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.more-goals {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.session-card-status {
+    text-align: right;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.status-badge.completed {
+    background: rgba(57, 255, 20, 0.2);
+    color: var(--neon-green);
+}
+
+.status-badge.active {
+    background: rgba(0, 243, 255, 0.2);
+    color: var(--neon-blue);
+}
+
+.status-badge.scheduled {
+    background: rgba(255, 149, 0, 0.2);
+    color: var(--neon-orange);
+}
+</style>
