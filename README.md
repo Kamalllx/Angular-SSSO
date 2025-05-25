@@ -475,4 +475,3 @@ async def generate_ai_study_plan(subject, duration, goals):
 
 
 ---
-Answer from Perplexity: pplx.ai/share
