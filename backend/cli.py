@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Smart Study Orchestrator CLI - FIXED VERSION
@@ -407,13 +408,14 @@ class StudyOrchestratorCLI:
             self.pause_menu()
     
     def pause_menu(self):
-        """Handle session pause menu"""
+        """Handle session pause menu - UPDATED with unblock option"""
         try:
             choice = questionary.select(
                 "What would you like to do?",
                 choices=[
                     "▶️  Resume Session",
                     "⏹️  End Session",
+                    "🔓 Unblock Websites Temporarily",  # NEW OPTION
                     "📊 Add Distraction",
                     "☕ Take Break"
                 ]
@@ -424,6 +426,11 @@ class StudyOrchestratorCLI:
                 return  # Return to timer loop
             elif "End Session" in choice:
                 self.end_session(completed=False)
+            elif "Unblock Websites" in choice:
+                print(f"{Fore.BLUE}🔓 Temporarily unblocking websites...")
+                self.unblock_websites()
+                print(f"{Fore.YELLOW}⚠️  Remember to re-enable blocking if needed!")
+                input("Press Enter to continue...")
             elif "Add Distraction" in choice:
                 self.record_distraction()
             elif "Take Break" in choice:
@@ -431,6 +438,7 @@ class StudyOrchestratorCLI:
         except Exception as e:
             print(f"{Fore.RED}❌ Error in pause menu: {e}")
             self.end_session(completed=False)
+
     
     def record_distraction(self):
         """Record a distraction event"""
@@ -464,7 +472,7 @@ class StudyOrchestratorCLI:
             print(f"{Fore.RED}❌ Error in break: {e}")
     
     def end_session(self, completed: bool = False):
-        """End the current study session"""
+        """End the current study session - FIXED with auto-unblock"""
         if not self.current_session:
             return
         
@@ -525,13 +533,67 @@ class StudyOrchestratorCLI:
             except Exception as e:
                 print(f"{Fore.YELLOW}⚠️  Error saving session: {e}")
             
+            # AUTOMATICALLY UNBLOCK WEBSITES WHEN SESSION ENDS
+            print(f"\n{Fore.BLUE}🔓 Automatically unblocking websites...")
+            self.unblock_websites()
+            
             self.current_session = None
         except Exception as e:
             print(f"{Fore.RED}❌ Error ending session: {e}")
             self.current_session = None
         
         input("\nPress Enter to continue...")
-    
+
+    def unblock_websites(self):
+        """Unblock all blocked websites"""
+        try:
+            response = requests.post(f"{self.backend_url}/api/study/unblock-websites", timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get("success"):
+                    removed_entries = result.get("removed_entries", 0)
+                    print(f"{Fore.GREEN}✅ Successfully unblocked all websites ({removed_entries} entries removed)")
+                else:
+                    print(f"{Fore.YELLOW}⚠️  Unblock failed: {result.get('error', 'Unknown error')}")
+            else:
+                print(f"{Fore.YELLOW}⚠️  Unblock request failed: {response.status_code}")
+        except Exception as e:
+            print(f"{Fore.YELLOW}⚠️  Error unblocking websites: {e}")
+
+
+
+    def manual_unblock_websites(self):
+        """Manually unblock all websites - NEW METHOD"""
+        print(f"{Fore.BLUE}🔓 Manually Unblocking All Websites")
+        print("="*40)
+        
+        confirm = questionary.confirm(
+            "This will unblock ALL websites that were blocked by the study app. Continue?",
+            default=True
+        ).ask()
+        
+        if confirm:
+            print(f"{Fore.BLUE}🔓 Removing website blocks...")
+            self.unblock_websites()
+        else:
+            print(f"{Fore.YELLOW}⏹️  Unblock cancelled")
+        
+        input("\nPress Enter to continue...")
+
+
+    # Add cleanup on program exit
+    def __del__(self):
+        """Cleanup when CLI is destroyed"""
+        try:
+            print(f"{Fore.BLUE}🔓 Cleaning up - unblocking websites...")
+            self.unblock_websites()
+        except:
+            pass  # Ignore errors during cleanup
+
+    # Update the main function to handle Ctrl+C gracefully
+
+
     def show_session_summary(self, focus_score: int, completed_goals: List[str], notes: str):
         """Display session completion summary"""
         print(f"\n{Fore.CYAN}📊 Session Summary")
@@ -1002,7 +1064,7 @@ class StudyOrchestratorCLI:
         input("\nPress Enter to continue...")
     
     def system_tools_menu(self):
-        """System tools and utilities"""
+        """System tools and utilities - UPDATED with manual unblock"""
         try:
             choice = questionary.select(
                 "🔧 System Tools",
@@ -1010,6 +1072,7 @@ class StudyOrchestratorCLI:
                     "🏥 System Health Check",
                     "📊 Backend Test Suite",
                     "🔄 Test Website Blocking",
+                    "🔓 Manually Unblock All Websites",  # NEW OPTION
                     "🧹 Clean Old Data",
                     "📋 View System Status",
                     "⬅️  Back to Main Menu"
@@ -1024,6 +1087,8 @@ class StudyOrchestratorCLI:
                 self.run_backend_tests()
             elif "Test Website Blocking" in choice:
                 self.test_website_blocking()
+            elif "Manually Unblock All Websites" in choice:
+                self.manual_unblock_websites()  # NEW METHOD
             elif "Clean Old Data" in choice:
                 self.clean_old_data()
             elif "System Status" in choice:
@@ -1031,7 +1096,6 @@ class StudyOrchestratorCLI:
         except Exception as e:
             print(f"{Fore.RED}❌ Error in system tools menu: {e}")
             input("Press Enter to continue...")
-    
     def test_website_blocking(self):
         """Test website blocking functionality"""
         print(f"{Fore.BLUE}🧪 Testing Website Blocking...")
@@ -1187,22 +1251,35 @@ class StudyOrchestratorCLI:
         input("\nPress Enter to continue...")
 
 def main():
-    """Main CLI entry point"""
+    """Main CLI entry point - UPDATED with cleanup"""
     parser = argparse.ArgumentParser(description="Smart Study Orchestrator CLI")
     parser.add_argument("--backend", default="http://localhost:5000", 
-                       help="Backend URL (default: http://localhost:5000)")
+                    help="Backend URL (default: http://localhost:5000)")
     
     args = parser.parse_args()
     
+    cli = None
     try:
         cli = StudyOrchestratorCLI(backend_url=args.backend)
         cli.main_menu()
     
     except KeyboardInterrupt:
-        print(f"\n{Fore.YELLOW}👋 Goodbye!")
+        print(f"\n{Fore.YELLOW}🔓 Cleaning up and unblocking websites...")
+        if cli:
+            cli.unblock_websites()
+        print(f"{Fore.YELLOW}👋 Goodbye!")
     except Exception as e:
         print(f"{Fore.RED}❌ Fatal error: {e}")
+        if cli:
+            cli.unblock_websites()
         sys.exit(1)
+    finally:
+        # Ensure cleanup happens
+        if cli:
+            try:
+                cli.unblock_websites()
+            except:
+                pass
 
 if __name__ == "__main__":
     main()

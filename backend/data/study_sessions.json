@@ -377,5 +377,35 @@
     "notes": "",
     "distractions": 0,
     "breaks_taken": 0
+  },
+  {
+    "id": "256db07b-5373-4cc0-abd9-fb6581bdd9bf",
+    "subject": "math",
+    "duration_minutes": 15,
+    "start_time": "2025-05-25T15:50:57.969945",
+    "end_time": "2025-05-25T15:53:05.274503",
+    "goals": [
+      "r"
+    ],
+    "completed_goals": [],
+    "focus_score": 80,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
+  },
+  {
+    "id": "44741eb9-2407-485d-b2d2-28493f3ebb75",
+    "subject": "math",
+    "duration_minutes": 15,
+    "start_time": null,
+    "end_time": null,
+    "goals": [
+      "Complete math study session"
+    ],
+    "completed_goals": [],
+    "focus_score": null,
+    "notes": "",
+    "distractions": 0,
+    "breaks_taken": 0
   }
 ]

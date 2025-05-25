@@ -323,6 +323,39 @@ def create_app():
             
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+    @app.route('/api/study/unblock-websites', methods=['POST'])
+    def unblock_websites():
+        """Unblock all websites using MCP"""
+        try:
+            print("🔓 Unblocking all websites...")
+            
+            # Use MCP service to unblock websites
+            if mcp_service.connected:
+                # Run async function in sync context
+                try:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    result = loop.run_until_complete(
+                        mcp_service.unblock_websites()
+                    )
+                    loop.close()
+                    return jsonify(result), 200
+                except Exception as e:
+                    print(f"Error during unblocking: {e}")
+                    return jsonify({
+                        "success": False,
+                        "error": str(e),
+                        "message": "Failed to unblock websites"
+                    }), 500
+            else:
+                return jsonify({
+                    "success": False,
+                    "error": "MCP service not connected",
+                    "message": "Cannot unblock websites"
+                }), 500
+                
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     @app.route('/api/study/session/<session_id>', methods=['GET'])
     def get_study_session(session_id):

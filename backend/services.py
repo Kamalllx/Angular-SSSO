@@ -289,6 +289,8 @@ class WebsiteBlockingService:
     
     def unblock_websites(self) -> Dict[str, Any]:
         """Remove website blocks from hosts file"""
+        print("🔓 Starting website unblock process...")
+        
         lines = self._read_hosts_file()
         if not lines:
             return {"success": False, "error": "Could not read hosts file"}
@@ -296,6 +298,7 @@ class WebsiteBlockingService:
         # Remove lines between our markers
         new_lines = []
         skip_lines = False
+        removed_lines = 0
         
         for line in lines:
             if self.block_marker in line:
@@ -305,15 +308,22 @@ class WebsiteBlockingService:
                 skip_lines = False
                 continue
             
-            if not skip_lines:
+            if skip_lines:
+                removed_lines += 1
+            else:
                 new_lines.append(line)
         
         if self._write_hosts_file(new_lines):
-            print("✅ All website blocks removed")
+            print(f"✅ Removed {removed_lines} blocked website entries")
             self.blocked_sites.clear()
-            return {"success": True, "message": "All website blocks removed"}
+            return {
+                "success": True, 
+                "message": f"Unblocked all websites ({removed_lines} entries removed)",
+                "removed_entries": removed_lines
+            }
         else:
             return {"success": False, "error": "Failed to modify hosts file"}
+
     
     def get_blocked_websites(self) -> List[str]:
         """Get currently blocked websites"""
